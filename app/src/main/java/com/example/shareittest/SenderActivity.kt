@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_sender.*
@@ -11,7 +12,6 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.net.Socket
-import java.net.URI
 import java.net.URLDecoder
 
 class SenderActivity : AppCompatActivity() {
@@ -77,10 +77,16 @@ class ClientThread(private val list:List<String>):Runnable{
             val s= Socket("192.168.43.8",9999)
             val decodedUrl=URLDecoder.decode(url,"UTF-8")
             val myFile=File(decodedUrl)
-            val myByteArray = ByteArray(myFile.length().toInt())
+            val fileName=decodedUrl.substring(decodedUrl.lastIndexOf('/')+1,decodedUrl.length)
+            Log.d("act","${fileName.length}")
+            val myByteArray = ByteArray(myFile.length().toInt()+fileName.toByteArray().size+2)
+            myByteArray[0]=fileName.length.toByte()
+            myByteArray[1]=myFile.length().toByte()
+            System.arraycopy(fileName.toByteArray(),0,myByteArray,2,fileName.toByteArray().size)
+
             val fis=FileInputStream(myFile)
             val bis=BufferedInputStream(fis)
-            bis.read(myByteArray,0,myByteArray.size)
+            bis.read(myByteArray,fileName.toByteArray().size+2,myFile.length().toInt())
 
             val os=s.getOutputStream()
             os.write(myByteArray,0,myByteArray.size)
