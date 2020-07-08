@@ -19,6 +19,10 @@ import java.nio.file.StandardCopyOption
 
 class ReceiverActivity : AppCompatActivity() {
 
+    companion object{
+        var fileSequence=1
+    }
+
     private lateinit var serverSocket:ServerSocket
     private lateinit var serverThread:Runnable
 
@@ -54,10 +58,10 @@ class ServerThread(private val serverSocket: ServerSocket, private val context: 
             val inputStream=socket.getInputStream()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //                Files.copy(inputStream,fileName.toPath()+Paths.get("hello_first"),StandardCopyOption.REPLACE_EXISTING)
-                Files.copy(inputStream,File(fileName.toPath().toString(),"hello_first.mp4").toPath(),StandardCopyOption.REPLACE_EXISTING)
+                Files.copy(inputStream,File(fileName.toPath().toString(),"hello_first_${ReceiverActivity.fileSequence++}.mp4").toPath(),StandardCopyOption.REPLACE_EXISTING)
             }
             else{
-                val outputStream=FileOutputStream(File(fileName,"hello_first.mp4"))
+                val outputStream=FileOutputStream(File(fileName,"hello_first_${ReceiverActivity.fileSequence++}.mp4"))
                 IOUtils.copy(inputStream,outputStream)
             }
 

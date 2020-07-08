@@ -72,8 +72,9 @@ class SenderActivity : AppCompatActivity() {
 
 class ClientThread(private val list:List<String>):Runnable{
     override fun run() {
-        val s= Socket("192.168.43.8",9999)
+//        val s= Socket("192.168.43.8",9999)
         for(url in list){
+            val s= Socket("192.168.43.8",9999)
             val decodedUrl=URLDecoder.decode(url,"UTF-8")
             val myFile=File(decodedUrl)
             val myByteArray = ByteArray(myFile.length().toInt())
@@ -84,7 +85,8 @@ class ClientThread(private val list:List<String>):Runnable{
             val os=s.getOutputStream()
             os.write(myByteArray,0,myByteArray.size)
             os.flush()
+            s.close()
         }
-        s.close()
+//        s.close()
     }
 }
